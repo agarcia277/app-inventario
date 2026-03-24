@@ -74,6 +74,30 @@ async function initDB() {
 
       CREATE UNIQUE INDEX IF NOT EXISTS idx_assets_serial ON assets(serial_number);
 
+      CREATE TABLE IF NOT EXISTS categories (
+        id SERIAL PRIMARY KEY,
+        value VARCHAR(50) UNIQUE NOT NULL,
+        label VARCHAR(100) NOT NULL,
+        icon VARCHAR(50),
+        is_system BOOLEAN NOT NULL DEFAULT false,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS client_users (
+        id SERIAL PRIMARY KEY,
+        first_name VARCHAR(100) NOT NULL,
+        last_name VARCHAR(100) NOT NULL,
+        email VARCHAR(150),
+        phone VARCHAR(50),
+        department VARCHAR(100),
+        position VARCHAR(100),
+        employee_id VARCHAR(50) UNIQUE,
+        notes TEXT,
+        active BOOLEAN NOT NULL DEFAULT true,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+
       CREATE TABLE IF NOT EXISTS software (
         id SERIAL PRIMARY KEY,
         name VARCHAR(200) NOT NULL,
@@ -123,30 +147,6 @@ async function initDB() {
       );
 
       CREATE INDEX IF NOT EXISTS idx_asset_documents_id ON asset_documents(asset_id);
-
-      CREATE TABLE IF NOT EXISTS categories (
-        id SERIAL PRIMARY KEY,
-        value VARCHAR(50) UNIQUE NOT NULL,
-        label VARCHAR(100) NOT NULL,
-        icon VARCHAR(50),
-        is_system BOOLEAN NOT NULL DEFAULT false,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      );
-
-      CREATE TABLE IF NOT EXISTS client_users (
-        id SERIAL PRIMARY KEY,
-        first_name VARCHAR(100) NOT NULL,
-        last_name VARCHAR(100) NOT NULL,
-        email VARCHAR(150),
-        phone VARCHAR(50),
-        department VARCHAR(100),
-        position VARCHAR(100),
-        employee_id VARCHAR(50) UNIQUE,
-        notes TEXT,
-        active BOOLEAN NOT NULL DEFAULT true,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      );
 
       CREATE TABLE IF NOT EXISTS asset_user_links (
         id SERIAL PRIMARY KEY,
