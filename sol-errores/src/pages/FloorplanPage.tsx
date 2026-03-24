@@ -474,7 +474,10 @@ export default function FloorplanPage() {
 
   const floorItems  = items.filter((i) => i.floor === currentFloor);
   const selectedItem = items.find((i) => i.id === selectedId) || null;
-  const currentImage = floorImages[currentFloor] || null;
+  const rawImage = floorImages[currentFloor] || null;
+  const currentImage = rawImage?.startsWith('/api')
+    ? rawImage.replace('/api', import.meta.env.VITE_API_URL || '/api')
+    : rawImage;
 
   const handleImageChange = (floor: number, url: string | null) => {
     setFloorImages((prev) => ({ ...prev, [floor]: url }));
