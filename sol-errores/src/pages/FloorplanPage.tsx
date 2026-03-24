@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Plus, Trash2, Save, X, Move, Square, Type,
   Server, Printer, Wifi, DoorOpen, Minus, ZoomIn, ZoomOut,
-  RotateCcw, Pencil, Info, ImagePlus, Image, Upload, AlertTriangle
+  RotateCcw, Pencil, Info, ImagePlus, Image, Upload, AlertTriangle, Filter
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { FloorplanItem, FloorplanItemType } from '../types';
@@ -128,13 +128,14 @@ function CanvasItem({ item, selected, canEdit, onSelect, onDragEnd, onResizeEnd 
   };
 
   const borderClass = TYPE_COLORS[item.type] || 'border-gray-600';
+  const typeDef = ITEM_TYPES.find(t => t.type === item.type);
 
   return (
     <div
       ref={ref}
       onMouseDown={handleMouseDown}
       onClick={(e) => e.stopPropagation()}
-      className={`absolute border-2 rounded flex items-center justify-center select-none
+      className={`absolute border-2 rounded flex flex-col items-center justify-center select-none overflow-hidden
         ${borderClass}
         ${selected ? 'ring-2 ring-blue-400 shadow-lg shadow-blue-900/50 z-20' : 'z-10'}
         ${canEdit ? 'cursor-move' : 'cursor-pointer'}
@@ -144,15 +145,21 @@ function CanvasItem({ item, selected, canEdit, onSelect, onDragEnd, onResizeEnd 
         top:  item.y,
         width: item.width,
         height: item.height,
-        backgroundColor: item.type !== 'label' ? item.color + '44' : 'transparent',
+        backgroundColor: item.type !== 'label' ? item.color + '66' : 'transparent',
         borderColor: item.type !== 'label' ? item.color : 'transparent',
       }}
     >
+      {item.type !== 'label' && typeDef?.icon && (
+        <div className="text-white opacity-90 mb-0.5" style={{ transform: 'scale(1.2)' }}>
+          {typeDef.icon}
+        </div>
+      )}
       <span
-        className={`text-xs font-medium text-center px-1 truncate pointer-events-none
-          ${item.type === 'label' ? 'text-white text-sm font-bold drop-shadow' : 'text-gray-100 drop-shadow-sm'}
+        className={`text-[10px] leading-tight font-medium text-center px-1 truncate pointer-events-none
+          ${item.type === 'label' ? 'text-white text-sm font-bold drop-shadow-md' : 'text-gray-100 drop-shadow-md'}
         `}
-        style={{ maxWidth: item.width - 8 }}
+        style={{ maxWidth: item.width - 4 }}
+        title={item.label}
       >
         {item.label}
       </span>
@@ -443,10 +450,12 @@ export default function FloorplanPage() {
   const [selectedId, setSelectedId]       = useState<number | null>(null);
   const [zoom, setZoom]                   = useState(1);
   const [showTypeMenu, setShowTypeMenu]   = useState(false);
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [showImagePanel, setShowImagePanel] = useState(false);
   const [floorImages, setFloorImages]     = useState<Record<number, string | null>>({ 0: null, 1: null });
   const [loadingImages, setLoadingImages] = useState(true);
   const [imgDims, setImgDims]             = useState<Record<string, { w: number, h: number }>>({});
+  const [visibleTypes, setVisibleTypes]   = useState<FloorplanItemType[]>(ITEM_TYPES.map(t => t.type));
 
   const load = useCallback(() => {
     setLoading(true);
@@ -473,7 +482,16 @@ export default function FloorplanPage() {
 
   useEffect(() => { load(); loadImages(); }, [load, loadImages]);
 
-  const floorItems  = items.filter((i) => i.floor === currentFloor);
+  const floorItems  = items.filter((i) => i.floor === currentFloor && visibleTypes.includes(i.type));
+
+  // Deseleccionar elemento si el usuario lo oculta por filtro
+  useEffect(() => {
+    if (selectedId) {
+      const it = items.find(i => i.id === selectedId);
+      if (it && !visibleTypes.includes(it.type)) setSelectedId(null);
+    }
+  }, [visibleTypes, items, selectedId]);
+
   const selectedItem = items.find((i) => i.id === selectedId) || null;
   const rawImage = floorImages[currentFloor] || null;
   const currentImage = rawImage?.startsWith('/api')
@@ -622,16 +640,63 @@ export default function FloorplanPage() {
           </button>
         ))}
 
-        {canEdit && (
-          <div className="relative ml-auto">
+        <div className="flex items-center gap-2 ml-auto">
+          {/* ── Filtro de elementos ── */}
+          <div className="relative">
             <button
-              onClick={() => setShowTypeMenu((v) => !v)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors"
+              onClick={() => { setShowFilterMenu(v => !v); setShowTypeMenu(false); }}
+              className="flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-medium rounded-lg transition-colors border border-gray-700"
             >
-              <Plus className="w-4 h-4" />
-              Añadir elemento
+              <Filter className="w-4 h-4" />
+              <span className="hidden sm:inline">Filtrar</span>
+              {visibleTypes.length < ITEM_TYPES.length && (
+                <span className="bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded-full ml-1 leading-none">
+                  {visibleTypes.length}
+                </span>
+              )}
             </button>
-            {showTypeMenu && (
+            {showFilterMenu && (
+              <div className="absolute right-0 top-full mt-1 w-56 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 overflow-hidden py-2" onClick={e => e.stopPropagation()}>
+                <div className="px-4 py-2 border-b border-gray-800 flex justify-between items-center bg-gray-800/50">
+                  <span className="text-xs font-semibold text-gray-300 uppercase">Tipos visibles</span>
+                  <button 
+                    onClick={() => setVisibleTypes(visibleTypes.length > 0 ? [] : ITEM_TYPES.map(t => t.type))}
+                    className="text-xs text-blue-400 hover:text-blue-300 font-medium"
+                  >
+                    {visibleTypes.length > 0 ? 'Ocultar todo' : 'Ver todo'}
+                  </button>
+                </div>
+                <div className="max-h-60 overflow-y-auto overflow-x-hidden pt-1">
+                  {ITEM_TYPES.map((t) => (
+                    <label key={t.type} className="flex items-center gap-3 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition-colors cursor-pointer select-none">
+                      <input 
+                        type="checkbox" 
+                        checked={visibleTypes.includes(t.type)}
+                        onChange={(e) => {
+                          if (e.target.checked) setVisibleTypes(prev => [...prev, t.type]);
+                          else setVisibleTypes(prev => prev.filter(vt => vt !== t.type));
+                        }}
+                        className="rounded border-gray-600 bg-gray-900 text-blue-500 focus:ring-blue-500/50 cursor-pointer"
+                      />
+                      <span className="text-gray-400 w-4 h-4 flex items-center justify-center">{t.icon}</span>
+                      <span className="truncate flex-1">{t.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {canEdit && (
+            <div className="relative">
+              <button
+                onClick={() => { setShowTypeMenu(v => !v); setShowFilterMenu(false); }}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">Añadir elemento</span>
+              </button>
+              {showTypeMenu && (
               <div className="absolute right-0 top-full mt-1 w-52 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 overflow-hidden">
                 {ITEM_TYPES.map((t) => (
                   <button
@@ -644,9 +709,9 @@ export default function FloorplanPage() {
                   </button>
                 ))}
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── Canvas ── */}
