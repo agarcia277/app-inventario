@@ -23,7 +23,7 @@ router.post('/', authenticate, requireEditor, async (req, res) => {
   }
   try {
     const { rows } = await pool.query(
-      `INSERT INTO floorplan_items (floor, x, y, width, height, type, label, color, asset_serial, notes)
+      `INSERT INTO floorplan_items (floor, x, y, width, height, type, label, color, asset_id, notes)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
       [
         floor, x, y,
@@ -48,7 +48,7 @@ router.put('/:id', authenticate, requireEditor, async (req, res) => {
   try {
     const { rows } = await pool.query(
       `UPDATE floorplan_items
-       SET x=$1, y=$2, width=$3, height=$4, label=$5, color=$6, asset_serial=$7, notes=$8, type=$9
+       SET x=$1, y=$2, width=$3, height=$4, label=$5, color=$6, asset_id=$7, notes=$8, type=$9
        WHERE id=$10 RETURNING *`,
       [x, y, width, height, label, color, asset_serial || null, notes || null, type, req.params.id]
     );
