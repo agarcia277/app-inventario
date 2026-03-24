@@ -133,6 +133,7 @@ function CanvasItem({ item, selected, canEdit, onSelect, onDragEnd, onResizeEnd 
     <div
       ref={ref}
       onMouseDown={handleMouseDown}
+      onClick={(e) => e.stopPropagation()}
       className={`absolute border-2 rounded flex items-center justify-center select-none
         ${borderClass}
         ${selected ? 'ring-2 ring-blue-400 shadow-lg shadow-blue-900/50 z-20' : 'z-10'}
