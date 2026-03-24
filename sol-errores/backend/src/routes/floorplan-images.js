@@ -122,7 +122,7 @@ router.post('/image', authenticate, requireEditor, (req, res) => {
 });
 
 // ── GET /api/floorplan/image-file/:filename — servir el archivo de imagen ─────
-router.get('/image-file/:filename', authenticate, (req, res) => {
+router.get('/image-file/:filename', (req, res) => {
   const filename = path.basename(req.params.filename); // evita path traversal
   const filePath = path.join(UPLOAD_DIR, filename);
 
@@ -141,7 +141,7 @@ router.get('/image-file/:filename', authenticate, (req, res) => {
   const mime = mimeMap[ext] || 'application/octet-stream';
 
   res.setHeader('Content-Type', mime);
-  res.setHeader('Cache-Control', 'private, max-age=86400');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
   res.sendFile(filePath);
 });
 
