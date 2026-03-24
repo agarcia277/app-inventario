@@ -23,8 +23,13 @@ export default function LoginPage() {
       setUser(res.data);
       toast.success(`Bienvenido, ${res.data.full_name}`);
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { error?: string } } };
-      toast.error(error.response?.data?.error || 'Credenciales incorrectas');
+      const error = err as { response?: { data?: { error?: string } }, message?: string };
+      if (!error.response) {
+        toast.error('Grave: No hay conexión con el servidor (Revisa el certificado SSL)');
+        console.error('Network Error:', err);
+      } else {
+        toast.error(error.response.data?.error || 'Credenciales incorrectas');
+      }
     } finally {
       setLoading(false);
     }
