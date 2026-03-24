@@ -477,7 +477,7 @@ export default function FloorplanPage() {
     ? rawImage.replace('/api', import.meta.env.VITE_API_URL || '/api')
     : rawImage;
 
-  // Cargar las dimensiones reales de la imagen para que no salga cortada
+  // Cargar las dimensiones reales de la imagen para calcular su proporción real
   useEffect(() => {
     if (currentImage && !imgDims[currentImage]) {
       const img = new window.Image();
@@ -488,8 +488,13 @@ export default function FloorplanPage() {
     }
   }, [currentImage, imgDims]);
 
-  const canvasW = currentImage && imgDims[currentImage] ? imgDims[currentImage].w : 1400;
-  const canvasH = currentImage && imgDims[currentImage] ? imgDims[currentImage].h : 900;
+  // Hacer el lienzo bien ancho (1800px) para que llene "el recuadro" azul en pantallas grandes,
+  // y calcular la altura exacta para mantener la proporción de la imagen subida sin que se corte.
+  const BASE_W = 1800;
+  const canvasW = BASE_W;
+  const canvasH = currentImage && imgDims[currentImage] 
+    ? Math.round(BASE_W * (imgDims[currentImage].h / imgDims[currentImage].w)) 
+    : 1000;
 
   const handleImageChange = (floor: number, url: string | null) => {
     setFloorImages((prev) => ({ ...prev, [floor]: url }));
