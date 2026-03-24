@@ -443,9 +443,9 @@ export default function FloorplanPage() {
   const [zoom, setZoom]                   = useState(1);
   const [showTypeMenu, setShowTypeMenu]   = useState(false);
   const [showImagePanel, setShowImagePanel] = useState(false);
-  // floorImages: { [floor]: url | null }
   const [floorImages, setFloorImages]     = useState<Record<number, string | null>>({ 0: null, 1: null });
   const [loadingImages, setLoadingImages] = useState(true);
+  const [imgDims, setImgDims]             = useState<Record<string, { w: number, h: number }>>({});
 
   const load = useCallback(() => {
     setLoading(true);
@@ -472,12 +472,24 @@ export default function FloorplanPage() {
 
   useEffect(() => { load(); loadImages(); }, [load, loadImages]);
 
-  const floorItems  = items.filter((i) => i.floor === currentFloor);
-  const selectedItem = items.find((i) => i.id === selectedId) || null;
   const rawImage = floorImages[currentFloor] || null;
   const currentImage = rawImage?.startsWith('/api')
     ? rawImage.replace('/api', import.meta.env.VITE_API_URL || '/api')
     : rawImage;
+
+  // Cargar las dimensiones reales de la imagen para que no salga cortada
+  useEffect(() => {
+    if (currentImage && !imgDims[currentImage]) {
+      const img = new window.Image();
+      img.onload = () => {
+        setImgDims(prev => ({ ...prev, [currentImage]: { w: img.width, h: img.height } }));
+      };
+      img.src = currentImage;
+    }
+  }, [currentImage, imgDims]);
+
+  const canvasW = currentImage && imgDims[currentImage] ? imgDims[currentImage].w : 1400;
+  const canvasH = currentImage && imgDims[currentImage] ? imgDims[currentImage].h : 900;
 
   const handleImageChange = (floor: number, url: string | null) => {
     setFloorImages((prev) => ({ ...prev, [floor]: url }));
@@ -646,16 +658,16 @@ export default function FloorplanPage() {
                 style={{
                   transform: `scale(${zoom})`,
                   transformOrigin: 'top left',
-                  width: 1400,
-                  height: 900,
+                  width: canvasW,
+                  height: canvasH,
                   position: 'relative',
                   // Si hay imagen la usamos de fondo, si no mostramos la cuadrícula
                   backgroundImage: currentImage
                     ? `url(${currentImage})`
                     : 'radial-gradient(circle, #374151 1px, transparent 1px)',
-                  backgroundSize: currentImage ? 'cover' : '24px 24px',
+                  backgroundSize: currentImage ? '100% 100%' : '24px 24px',
                   backgroundRepeat: currentImage ? 'no-repeat' : 'repeat',
-                  backgroundPosition: 'center',
+                  backgroundPosition: 'top left',
                   flexShrink: 0,
                 }}
               >
