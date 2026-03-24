@@ -25,28 +25,28 @@ const ITEM_TYPES: {
   defaultW: number;
   defaultH: number;
 }[] = [
-  { type: 'room',        label: 'Sala / Zona',     icon: <Square className="w-4 h-4" />,  defaultColor: '#1e3a5f', defaultW: 200, defaultH: 150 },
-  { type: 'desk',        label: 'Mesa / Puesto',   icon: <Move className="w-4 h-4" />,    defaultColor: '#1a3a2a', defaultW: 100, defaultH: 60  },
-  { type: 'server_rack', label: 'Rack Servidor',   icon: <Server className="w-4 h-4" />,  defaultColor: '#3b1f5e', defaultW: 60,  defaultH: 100 },
-  { type: 'printer',     label: 'Impresora',       icon: <Printer className="w-4 h-4" />, defaultColor: '#3d2a0a', defaultW: 70,  defaultH: 70  },
-  { type: 'switch',      label: 'Switch / Router', icon: <Wifi className="w-4 h-4" />,    defaultColor: '#1a3a2a', defaultW: 80,  defaultH: 40  },
-  { type: 'wall',        label: 'Pared',           icon: <Minus className="w-4 h-4" />,   defaultColor: '#374151', defaultW: 200, defaultH: 16  },
-  { type: 'door',        label: 'Puerta',          icon: <DoorOpen className="w-4 h-4" />,defaultColor: '#92400e', defaultW: 60,  defaultH: 16  },
-  { type: 'label',       label: 'Etiqueta texto',  icon: <Type className="w-4 h-4" />,    defaultColor: '#1f2937', defaultW: 120, defaultH: 36  },
-  { type: 'asset',       label: 'Activo IT',       icon: <Server className="w-4 h-4" />,  defaultColor: '#1e3a5f', defaultW: 80,  defaultH: 80  },
-];
+    { type: 'room', label: 'Sala / Zona', icon: <Square className="w-4 h-4" />, defaultColor: '#1e3a5f', defaultW: 200, defaultH: 150 },
+    { type: 'desk', label: 'Mesa / Puesto', icon: <Move className="w-4 h-4" />, defaultColor: '#1a3a2a', defaultW: 100, defaultH: 60 },
+    { type: 'server_rack', label: 'Rack Servidor', icon: <Server className="w-4 h-4" />, defaultColor: '#3b1f5e', defaultW: 60, defaultH: 100 },
+    { type: 'printer', label: 'Impresora', icon: <Printer className="w-4 h-4" />, defaultColor: '#3d2a0a', defaultW: 70, defaultH: 70 },
+    { type: 'switch', label: 'Switch / Router', icon: <Wifi className="w-4 h-4" />, defaultColor: '#1a3a2a', defaultW: 80, defaultH: 40 },
+    { type: 'wall', label: 'Pared', icon: <Minus className="w-4 h-4" />, defaultColor: '#374151', defaultW: 200, defaultH: 16 },
+    { type: 'door', label: 'Puerta', icon: <DoorOpen className="w-4 h-4" />, defaultColor: '#92400e', defaultW: 60, defaultH: 16 },
+    { type: 'label', label: 'Etiqueta texto', icon: <Type className="w-4 h-4" />, defaultColor: '#1f2937', defaultW: 120, defaultH: 36 },
+    { type: 'asset', label: 'Activo IT', icon: <Server className="w-4 h-4" />, defaultColor: '#1e3a5f', defaultW: 80, defaultH: 80 },
+  ];
 
 const TYPE_COLORS: Record<FloorplanItemType, string> = {
-  room:        'border-blue-500/40',
-  desk:        'border-green-500/40',
+  room: 'border-blue-500/40',
+  desk: 'border-green-500/40',
   server_rack: 'border-purple-500/40',
-  printer:     'border-orange-500/40',
-  switch:      'border-teal-500/40',
-  wall:        'border-gray-500/60',
-  door:        'border-yellow-600/60',
-  window:      'border-cyan-400/40',
-  asset:       'border-blue-400/40',
-  label:       'border-transparent',
+  printer: 'border-orange-500/40',
+  switch: 'border-teal-500/40',
+  wall: 'border-gray-500/60',
+  door: 'border-yellow-600/60',
+  window: 'border-cyan-400/40',
+  asset: 'border-blue-400/40',
+  label: 'border-transparent',
 };
 
 // ─── API para imágenes de planta ──────────────────────────────────────────────
@@ -88,7 +88,7 @@ function CanvasItem({ item, selected, canEdit, onSelect, onDragEnd, onResizeEnd 
     const onMove = (ev: MouseEvent) => {
       if (!dragStart.current || !ref.current) return;
       ref.current.style.left = `${dragStart.current.ix + ev.clientX - dragStart.current.mx}px`;
-      ref.current.style.top  = `${dragStart.current.iy + ev.clientY - dragStart.current.my}px`;
+      ref.current.style.top = `${dragStart.current.iy + ev.clientY - dragStart.current.my}px`;
     };
     const onUp = (ev: MouseEvent) => {
       if (!dragStart.current) return;
@@ -109,7 +109,7 @@ function CanvasItem({ item, selected, canEdit, onSelect, onDragEnd, onResizeEnd 
     resizeStart.current = { mx: e.clientX, my: e.clientY, iw: item.width, ih: item.height };
     const onMove = (ev: MouseEvent) => {
       if (!resizeStart.current || !ref.current) return;
-      ref.current.style.width  = `${Math.max(40, resizeStart.current.iw + ev.clientX - resizeStart.current.mx)}px`;
+      ref.current.style.width = `${Math.max(40, resizeStart.current.iw + ev.clientX - resizeStart.current.mx)}px`;
       ref.current.style.height = `${Math.max(20, resizeStart.current.ih + ev.clientY - resizeStart.current.my)}px`;
     };
     const onUp = (ev: MouseEvent) => {
@@ -142,7 +142,7 @@ function CanvasItem({ item, selected, canEdit, onSelect, onDragEnd, onResizeEnd 
       `}
       style={{
         left: item.x,
-        top:  item.y,
+        top: item.y,
         width: item.width,
         height: item.height,
         backgroundColor: item.type !== 'label' ? item.color + '66' : 'transparent',
@@ -444,18 +444,18 @@ export default function FloorplanPage() {
   const { user } = useAuth();
   const canEdit = user?.role === 'admin' || user?.role === 'editor';
 
-  const [currentFloor, setCurrentFloor]   = useState(0);
-  const [items, setItems]                 = useState<FloorplanItem[]>([]);
-  const [loading, setLoading]             = useState(true);
-  const [selectedId, setSelectedId]       = useState<number | null>(null);
-  const [zoom, setZoom]                   = useState(1);
-  const [showTypeMenu, setShowTypeMenu]   = useState(false);
+  const [currentFloor, setCurrentFloor] = useState(0);
+  const [items, setItems] = useState<FloorplanItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [showTypeMenu, setShowTypeMenu] = useState(false);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [showImagePanel, setShowImagePanel] = useState(false);
-  const [floorImages, setFloorImages]     = useState<Record<number, string | null>>({ 0: null, 1: null });
+  const [floorImages, setFloorImages] = useState<Record<number, string | null>>({ 0: null, 1: null });
   const [loadingImages, setLoadingImages] = useState(true);
-  const [imgDims, setImgDims]             = useState<Record<string, { w: number, h: number }>>({});
-  const [visibleTypes, setVisibleTypes]   = useState<FloorplanItemType[]>(ITEM_TYPES.map(t => t.type));
+  const [imgDims, setImgDims] = useState<Record<string, { w: number, h: number }>>({});
+  const [visibleTypes, setVisibleTypes] = useState<FloorplanItemType[]>(ITEM_TYPES.map(t => t.type));
 
   const load = useCallback(() => {
     setLoading(true);
@@ -476,13 +476,13 @@ export default function FloorplanPage() {
         });
         setFloorImages(map);
       })
-      .catch(() => {}) // silencioso si no existe el endpoint aún
+      .catch(() => { }) // silencioso si no existe el endpoint aún
       .finally(() => setLoadingImages(false));
   }, []);
 
   useEffect(() => { load(); loadImages(); }, [load, loadImages]);
 
-  const floorItems  = items.filter((i) => i.floor === currentFloor && visibleTypes.includes(i.type));
+  const floorItems = items.filter((i) => i.floor === currentFloor && visibleTypes.includes(i.type));
 
   // Deseleccionar elemento si el usuario lo oculta por filtro
   useEffect(() => {
@@ -513,8 +513,8 @@ export default function FloorplanPage() {
   // y calcular la altura exacta para mantener la proporción de la imagen subida sin que se corte.
   const BASE_W = 1800;
   const canvasW = BASE_W;
-  const canvasH = currentImage && imgDims[currentImage] 
-    ? Math.round(BASE_W * (imgDims[currentImage].h / imgDims[currentImage].w)) 
+  const canvasH = currentImage && imgDims[currentImage]
+    ? Math.round(BASE_W * (imgDims[currentImage].h / imgDims[currentImage].w))
     : 1000;
 
   const handleImageChange = (floor: number, url: string | null) => {
@@ -659,7 +659,7 @@ export default function FloorplanPage() {
               <div className="absolute right-0 top-full mt-1 w-56 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 overflow-hidden py-2" onClick={e => e.stopPropagation()}>
                 <div className="px-4 py-2 border-b border-gray-800 flex justify-between items-center bg-gray-800/50">
                   <span className="text-xs font-semibold text-gray-300 uppercase">Tipos visibles</span>
-                  <button 
+                  <button
                     onClick={() => setVisibleTypes(visibleTypes.length > 0 ? [] : ITEM_TYPES.map(t => t.type))}
                     className="text-xs text-blue-400 hover:text-blue-300 font-medium"
                   >
@@ -669,8 +669,8 @@ export default function FloorplanPage() {
                 <div className="max-h-60 overflow-y-auto overflow-x-hidden pt-1">
                   {ITEM_TYPES.map((t) => (
                     <label key={t.type} className="flex items-center gap-3 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition-colors cursor-pointer select-none">
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         checked={visibleTypes.includes(t.type)}
                         onChange={(e) => {
                           if (e.target.checked) setVisibleTypes(prev => [...prev, t.type]);
@@ -831,19 +831,5 @@ export default function FloorplanPage() {
           onClose={() => setShowImagePanel(false)}
         />
       )}
-
-      {/* ── Advertencia si backend no soporta imágenes ── */}
-      {!loadingImages && !loading && canEdit && (
-        <div className="flex items-start gap-2 bg-yellow-500/10 border border-yellow-500/20 rounded-xl px-4 py-3 text-xs text-yellow-400 flex-shrink-0">
-          <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-          <span>
-            <strong>Nota:</strong> Para que las imágenes de planta funcionen, el backend necesita el endpoint{' '}
-            <code className="font-mono bg-yellow-500/10 px-1 rounded">/api/floorplan/image</code>.
-            Si acabas de actualizar, reconstruye el contenedor backend:{' '}
-            <code className="font-mono bg-yellow-500/10 px-1 rounded">docker compose build backend && docker compose up -d backend</code>
-          </span>
-        </div>
-      )}
-    </div>
-  );
+      );
 }
