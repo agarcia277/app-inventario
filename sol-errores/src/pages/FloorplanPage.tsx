@@ -697,18 +697,19 @@ export default function FloorplanPage() {
                 <span className="hidden sm:inline">Añadir elemento</span>
               </button>
               {showTypeMenu && (
-              <div className="absolute right-0 top-full mt-1 w-52 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 overflow-hidden">
-                {ITEM_TYPES.map((t) => (
-                  <button
-                    key={t.type}
-                    onClick={() => handleAddItem(t.type)}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors text-left"
-                  >
-                    <span className="text-blue-400">{t.icon}</span>
-                    {t.label}
-                  </button>
-                ))}
-              </div>
+                <div className="absolute right-0 top-full mt-1 w-52 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 overflow-hidden">
+                  {ITEM_TYPES.map((t) => (
+                    <button
+                      key={t.type}
+                      onClick={() => handleAddItem(t.type)}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors text-left"
+                    >
+                      <span className="text-blue-400">{t.icon}</span>
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
