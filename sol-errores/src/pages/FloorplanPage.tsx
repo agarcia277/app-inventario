@@ -649,13 +649,21 @@ export default function FloorplanPage() {
   const [floorImages, setFloorImages] = useState<Record<number, string | null>>({ 0: null, 1: null });
   const [loadingImages, setLoadingImages] = useState(true);
   const [imgDims, setImgDims] = useState<Record<string, { w: number, h: number }>>({});
-  const [visibleTypes, setVisibleTypes] = useState<FloorplanItemType[]>(ITEM_TYPES.map(t => t.type));
+  const [categories, setCategories] = useState<FloorplanCategory[]>([]);
+  const [visibleTypes, setVisibleTypes] = useState<string[]>([]);
 
   const load = useCallback(() => {
     setLoading(true);
-    getFloorplan()
-      .then((res) => setItems(res.data))
-      .catch(() => toast.error('Error al cargar el mapa'))
+    Promise.all([getFloorplan(), getFloorplanCategories()])
+      .then(([itemsRes, catsRes]) => {
+        setItems(itemsRes.data);
+        setCategories(catsRes.data);
+        setVisibleTypes(catsRes.data.map((c: FloorplanCategory) => c.type));
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error('Error al cargar el mapa o las categorías');
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -715,18 +723,18 @@ export default function FloorplanPage() {
     setFloorImages((prev) => ({ ...prev, [floor]: url }));
   };
 
-  const handleAddItem = async (type: FloorplanItemType) => {
-    const def = ITEM_TYPES.find((t) => t.type === type);
+  const handleAddItem = async (type: string) => {
+    const def = categories.find((t) => t.type === type);
     setShowTypeMenu(false);
     try {
       const res = await createFloorplanItem({
         floor: currentFloor,
         x: 60, y: 60,
-        width: def?.defaultW || 120,
-        height: def?.defaultH || 80,
+        width: def?.default_w || 120,
+        height: def?.default_h || 80,
         type,
         label: def?.label || 'Elemento',
-        color: def?.defaultColor || '#3b82f6',
+        color: def?.default_color || '#3b82f6',
       });
       setItems((prev) => [...prev, res.data]);
       setSelectedId(res.data.id);
