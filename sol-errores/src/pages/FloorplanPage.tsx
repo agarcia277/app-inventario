@@ -652,19 +652,26 @@ export default function FloorplanPage() {
   const [categories, setCategories] = useState<FloorplanCategory[]>([]);
   const [visibleTypes, setVisibleTypes] = useState<string[]>([]);
 
-  const load = useCallback(() => {
+  const load = useCallback(async () => {
     setLoading(true);
-    Promise.all([getFloorplan(), getFloorplanCategories()])
-      .then(([itemsRes, catsRes]) => {
-        setItems(itemsRes.data);
+    try {
+      const [itemsRes, catsRes] = await Promise.all([
+        getFloorplan(),
+        getFloorplanCategories()
+      ]);
+      setItems(itemsRes.data);
+      if (Array.isArray(catsRes.data)) {
         setCategories(catsRes.data);
         setVisibleTypes(catsRes.data.map((c: FloorplanCategory) => c.type));
-      })
-      .catch((err) => {
-        console.error(err);
-        toast.error('Error al cargar el mapa o las categorías');
-      })
-      .finally(() => setLoading(false));
+      } else {
+        toast.error('El backend no ha devuelto las categorías correctamente. ¿Se ha actualizado el servidor?');
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error(`Error red: ${err?.response?.status || 'Desconocido'} - Verifica que el Backend esté actualizado y corriendo (Deploy en Dokploy)`);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const loadImages = useCallback(() => {
