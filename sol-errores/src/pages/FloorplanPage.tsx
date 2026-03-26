@@ -643,6 +643,7 @@ export default function FloorplanPage() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [zoom, setZoom] = useState(1);
   const [showTypeMenu, setShowTypeMenu] = useState(false);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [showImagePanel, setShowImagePanel] = useState(false);
   const [floorImages, setFloorImages] = useState<Record<number, string | null>>({ 0: null, 1: null });
@@ -984,6 +985,7 @@ export default function FloorplanPage() {
                 {floorItems.map((item) => (
                   <CanvasItem
                     key={item.id}
+                    categories={categories}
                     item={item}
                     selected={selectedId === item.id}
                     canEdit={canEdit}
@@ -998,6 +1000,7 @@ export default function FloorplanPage() {
             {/* Panel de propiedades */}
             {selectedItem && (
               <PropertiesPanel
+                categories={categories}
                 item={selectedItem}
                 canEdit={canEdit}
                 onUpdate={handleUpdate}
