@@ -831,19 +831,6 @@ export default function FloorplanPage() {
           onClose={() => setShowImagePanel(false)}
         />
       )}
-
-      {/* ── Advertencia si backend no soporta imágenes ── */}
-      {!loadingImages && !loading && canEdit && (
-        <div className="flex items-start gap-2 bg-yellow-500/10 border border-yellow-500/20 rounded-xl px-4 py-3 text-xs text-yellow-400 flex-shrink-0">
-          <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-          <span>
-            <strong>Nota:</strong> Para que las imágenes de planta funcionen, el backend necesita el endpoint{' '}
-            <code className="font-mono bg-yellow-500/10 px-1 rounded">/api/floorplan/image</code>.
-            Si acabas de actualizar, reconstruye el contenedor backend:{' '}
-            <code className="font-mono bg-yellow-500/10 px-1 rounded">docker compose build backend && docker compose up -d backend</code>
-          </span>
-        </div>
-      )}
     </div>
   );
 }
