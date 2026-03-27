@@ -219,13 +219,30 @@ async function initDB() {
   }
 }
 
-initDB()
-  .then(() => {
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`🚀 Servidor iniciado en puerto ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('❌ Error al inicializar la base de datos:', err);
-    process.exit(1);
-  });
+
+// Retry wrapper — waits for DB to be ready (common race condition in Docker)
+async function startWithRetry(maxRetries = 10, delayMs = 3000) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`⏳ Intento ${attempt}/${maxRetries} de conexión a la base de datos...`);
+      await initDB();
+      app.listen(PORT, '0.0.0.0', () => {
+        console.log(`🚀 Servidor iniciado en puerto ${PORT}`);
+      });
+      return; // success
+    } catch (err) {
+      console.error(`❌ Intento ${attempt} fallido:`);
+      console.error(`   Código:   ${err.code}`);
+      console.error(`   Mensaje:  ${err.message}`);
+      if (err.address) console.error(`   Host:     ${err.address}`);
+      if (attempt === maxRetries) {
+        console.error('💀 No se pudo conectar a la base de datos después de todos los intentos. Saliendo.');
+        process.exit(1);
+      }
+      console.log(`   Reintentando en ${delayMs / 1000}s...`);
+      await new Promise(r => setTimeout(r, delayMs));
+    }
+  }
+}
+
+startWithRetry();
